@@ -1,30 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import imagem from "./assets/logo.svg";
-import { useState } from "react";
+import { login, register } from "./services/api";
 
 const App: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true); // Estado para alternar entre Login e Cadastro
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      if (isLogin) {
+        const response = await login(email, password);
+        alert(`Login realizado com sucesso: ${JSON.stringify(response)}`);
+      } else {
+        const response = await register(name, email, password);
+        alert(`Cadastro realizado com sucesso: ${JSON.stringify(response)}`);
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      alert("Ocorreu um erro. Verifique os dados e tente novamente.");
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-        {/* Imagem */}
         <div className="flex justify-center">
           <img src={imagem} alt="Logo" className="w-32 h-32 rounded-full" />
         </div>
-
-        {/* Título */}
         <h1 className="text-3xl font-bold underline text-center">
           {isLogin ? "Login" : "Cadastro"} - Agendamento Online
         </h1>
-
-        {/* Formulário */}
-        <form className="mt-4 space-y-4">
+        <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
           {!isLogin && (
             <div>
               <input
                 type="text"
                 placeholder="Nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -33,6 +49,8 @@ const App: React.FC = () => {
             <input
               type="email"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -40,11 +58,11 @@ const App: React.FC = () => {
             <input
               type="password"
               placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
-          {/* Botão de Enviar */}
           <button
             type="submit"
             className="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-300"
@@ -52,8 +70,6 @@ const App: React.FC = () => {
             {isLogin ? "Entrar" : "Cadastrar"}
           </button>
         </form>
-
-        {/* Alternar entre Login e Cadastro */}
         <div className="mt-4 text-center">
           <button
             onClick={() => setIsLogin(!isLogin)}
